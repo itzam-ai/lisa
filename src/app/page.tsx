@@ -1,6 +1,8 @@
 "use client";
 
 import { AnimatePresence } from "framer-motion";
+import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 import { BounceContainer, useBounce } from "~/components/bounce-container";
 import { Button } from "~/components/button";
@@ -76,7 +78,22 @@ export default function HomePage() {
           </AnimatePresence>
         </div>
 
-        <div />
+        <p className={`${cormorant.className} text-stone-700`}>
+          Powered by{" "}
+          <Link
+            href="https://itz.am"
+            target="_blank"
+            className="hover:opacity-80 transition-opacity"
+          >
+            <Image
+              src="/logo.png"
+              alt="logo"
+              width={64}
+              height={64}
+              className="mb-1 ml-1 inline-block"
+            />
+          </Link>
+        </p>
       </Container>
     </main>
   );
