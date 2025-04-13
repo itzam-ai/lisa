@@ -32,26 +32,49 @@ export default function HomePage() {
       body: JSON.stringify({ input }),
     });
 
-    const reader = res.body?.getReader();
+    const stream = res.body as ReadableStream;
+    const reader = stream.getReader();
+    const decoder = new TextDecoder();
 
-    if (!reader) {
-      setIsLoading(false);
-      return;
-    }
+    try {
+      while (true) {
+        const { done, value } = (await reader.read()) as {
+          done: boolean;
+          value: Uint8Array;
+        };
+        if (done) {
+          break;
+        }
 
-    while (true) {
-      const { done, value } = await reader.read();
+        const chunk = decoder.decode(value);
+        const lines = chunk.split("\n");
 
-      if (done) {
-        break;
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i]?.trim() ?? "";
+          if (line.startsWith("event: ")) {
+            const eventType = line.slice(7);
+            // Skip the 'data: ' line
+            i++;
+            const data = lines[i]?.slice(6) ?? "";
+
+            if (eventType === "text") {
+              console.log("data", data);
+
+              // Append the text chunk to the output
+              setResponse((prev) => prev + data);
+            }
+          }
+        }
       }
+    } catch (error) {
+      console.error("Error reading stream:", error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+      setInput("");
 
-      const text = new TextDecoder().decode(value);
-      setResponse((prev) => prev + text);
+      reader.releaseLock();
     }
-
-    setInput("");
-    setIsLoading(false);
   };
 
   return (
@@ -83,7 +106,7 @@ export default function HomePage() {
           <Link
             href="https://itz.am"
             target="_blank"
-            className="hover:opacity-80 transition-opacity"
+            className="transition-opacity hover:opacity-80"
           >
             <Image
               src="/logo.png"
