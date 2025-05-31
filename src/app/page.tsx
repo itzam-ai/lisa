@@ -31,7 +31,9 @@ export default function HomePage() {
     const response = await sendMessageToLisa(input);
 
     for await (const chunk of response.stream) {
-      setResponse(chunk);
+      console.log(chunk);
+
+      setResponse((prev) => prev + chunk);
     }
 
     setIsLoading(false);
