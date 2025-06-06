@@ -286,7 +286,7 @@ export function TextEffect({
         delay: 0.2,
         opacity: { duration: 0.3, delay: 0.1 },
       }}
-      className="max-w-lg overflow-hidden text-center text-sm text-stone-200"
+      className="max-w-lg overflow-hidden text-center text-sm text-neutral-200"
     >
       <AnimatePresence mode="popLayout">
         {trigger && (
